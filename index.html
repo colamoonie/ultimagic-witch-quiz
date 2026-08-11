@@ -13,48 +13,50 @@
             --btn-hover: #4a2080;
         }
 
-body {
-    font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-    color: var(--text-color);
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    box-sizing: border-box;
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
 
-    /* 🖼️ 背景圖設定 (防拉伸/防變形) */
-    background-image: url('bg.png'); /* 替換成妳的背景檔名 */
-    background-size: cover;          /* 自動縮放填滿螢幕，絕不拉伸變形 */
-    background-position: center;      /* 永遠鎖定在背景圖的正中央 */
-    background-repeat: no-repeat;     /* 不重複拼貼 */
-    background-attachment: fixed;     /* 手機滑動時背景固定，質感極佳 */
-}
+            /* 🖼️ 背景圖設定 (預設讀取 bg.png，若無圖片則自動退回深紫背景) */
+            background-color: var(--bg-color);
+            background-image: url('bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
 
         .container {
             width: 100%;
             max-width: 600px;
-            background: var(--card-bg);
+            background: rgba(43, 18, 76, 0.92);
             border: 2px solid var(--accent-color);
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
             text-align: center;
             box-sizing: border-box;
+            backdrop-filter: blur(5px);
         }
 
         h1 {
             color: var(--accent-color);
             font-size: 1.5rem;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .subtitle {
             font-size: 0.95rem;
             color: #d1b3ff;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             line-height: 1.6;
         }
 
@@ -89,7 +91,7 @@ body {
         }
 
         .option-btn {
-            background: #391763;
+            background: rgba(57, 23, 99, 0.8);
             color: var(--text-color);
             border: 1px solid #7b3fe4;
             padding: 14px 16px;
@@ -107,12 +109,73 @@ body {
             transform: translateY(-2px);
         }
 
+        /* 結果頁樣式 */
         .result-img {
             width: 100%;
             border-radius: 12px;
             border: 2px solid var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .char-title {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .info-box {
+            background: rgba(20, 6, 40, 0.6);
+            border-left: 4px solid var(--accent-color);
+            padding: 12px 15px;
+            border-radius: 6px;
+            text-align: left;
+            margin-bottom: 15px;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .potion-tag {
+            display: inline-block;
+            background: #4a2080;
+            color: #ffd700;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .affinity-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-bottom: 20px;
         }
+
+        .affinity-card {
+            background: rgba(57, 23, 99, 0.6);
+            border: 1px solid #7b3fe4;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .affinity-card.good {
+            border-color: #ff79c6;
+        }
+
+        .affinity-card.bad {
+            border-color: #6272a4;
+        }
+
+        .affinity-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .affinity-card.good .affinity-title { color: #ff79c6; }
+        .affinity-card.bad .affinity-title { color: #8be9fd; }
 
         .share-btn {
             background: var(--accent-color);
@@ -123,7 +186,7 @@ body {
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 5px;
             transition: transform 0.2s;
         }
 
@@ -131,9 +194,7 @@ body {
             transform: scale(1.05);
         }
 
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -142,7 +203,7 @@ body {
     <!-- 開始畫面 -->
     <div id="start-screen">
         <h1>🔮 終焉魔法學院 🔮<br>【命定魔女入學性向測驗】</h1>
-        <p class="subtitle">第 87 屆魔藥學對抗賽開賽在即！<br>回答 20 道學院生活情境題，測出哪一位魔女（或魔男）是你的靈魂命定！</p>
+        <p class="subtitle">第 87 屆魔藥學對抗賽開賽在即！<br>回答 20 道學院情境題，測出哪一位魔女（或魔男）是你的靈魂命定！</p>
         <button class="share-btn" onclick="startQuiz()">進入學院測試 ✦</button>
     </div>
 
@@ -157,28 +218,123 @@ body {
 
     <!-- 結果畫面 -->
     <div id="result-screen" class="hidden">
-        <h1>✨ 測驗結果揭曉 ✨</h1>
-        <p class="subtitle">在終焉魔法學院裡，你的命定代表是：</p>
+        <h1>✨ 靈魂共鳴揭曉 ✨</h1>
         <img id="result-image" class="result-img" src="" alt="測驗結果圖">
-        <br>
+        
+        <div id="char-title" class="char-title"></div>
+        <div id="potion-tag" class="potion-tag"></div>
+
+        <div class="info-box">
+            <strong>📖 學院測驗評語：</strong><br>
+            <span id="char-comment"></span>
+        </div>
+
+        <div class="affinity-container">
+            <div class="affinity-card good">
+                <div class="affinity-title">💖 最佳契合魔女</div>
+                <div id="good-match"></div>
+            </div>
+            <div class="affinity-card bad">
+                <div class="affinity-title">⚡ 屬性相克魔女</div>
+                <div id="bad-match"></div>
+            </div>
+        </div>
+
         <button class="share-btn" onclick="copyLink()">📋 複製連結分享給友達</button>
     </div>
 </div>
 
 <script>
-    // 角色對應圖片清單
-    const characterImages = {
-        yoyo: "揭示_呦呦.png",
-        kurohitsuji: "揭示_咩嚕.png",
-        muri: "揭示_姆莉.png",
-        hiroa: "揭示_希亞.png",
-        yunineko: "揭示_悠妮.png",
-        aisha: "揭示_愛紗.png",
-        colamoonie: "揭示_月月.png",
-        isowata: "揭示_渡渡.png",
-        esmea: "揭示_艾絲梅亞.png",
-        snowbao: "揭示_雪寶.png",
-        potato: "揭示_薯薯.png"
+    // 11 位魔女完整資料庫
+    const charDatabase = {
+        colamoonie: {
+            title: "可樂月月 - 混沌月霄☾命運編織魔女",
+            img: "揭示_月月.png",
+            potion: "🍹 命定魔藥：黑魔女・神秘金色粉末冬瓜烏龍",
+            comment: "你表面上冷靜優雅、彷彿掌握了世間萬物的運行法則，但骨子裡卻深藏著對混沌與趣味的渴望！你擁有看透局勢的透徹眼光，往往是隊伍中最靠得住的幕後軍師。",
+            good: "希蘿亞（溫暖陽光融化了妳的冰冷）",
+            bad: "呦呦（自信過頭讓妳感到頭痛）"
+        },
+        muri: {
+            title: "姆莉醬 - 可愛魅惑牡蠣魔女",
+            img: "揭示_姆莉.png",
+            potion: "🍹 命定魔藥：黑魔女・神秘金色粉末冬瓜烏龍",
+            comment: "擁有讓人無法抗拒的絕頂可愛與小惡魔屬性！你非常擅長利用自己的魅力獲得注意，看似軟萌無害，實則在暗中掌握了全場的節奏與話題焦點！",
+            good: "伊索渡（災厄遇到可愛只能甘拜下風）",
+            bad: "雪寶うさぎ（同為小惡魔互不相讓）"
+        },
+        potato: {
+            title: "語風薯薯 - 邪氣薯條魔男",
+            img: "揭示_薯薯.png",
+            potion: "🍹 命定魔藥：黑魔女・神秘金色粉末冬瓜烏龍",
+            comment: "充滿混亂邪惡與無厘頭能量的奇蹟存在！規則在你眼中只是擺設，你總能用讓人意想不到的奇葩言行帶來歡笑，是全學院公認的快樂源泉！",
+            good: "愛紗公主（傲嬌遇到無厘頭莫可奈何）",
+            bad: "希蘿亞（過於正直無私讓你犯懶）"
+        },
+        aisha: {
+            title: "愛紗公主 - 調皮貓咪魔女",
+            img: "揭示_愛紗.png",
+            potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
+            comment: "傲嬌又優雅的貓咪化身！你擁有強烈的自尊心與精緻的生活品味，雖然偶爾會鬧小脾氣或捉弄人，但只要被你認定為朋友，就會獲得你最直率的護短與關心。",
+            good: "語風薯薯（奇葩行為能瞬間惹怒並逗笑妳）",
+            bad: "黑羊める（爆破魔藥會弄髒妳的精緻衣裳）"
+        },
+        hiroa: {
+            title: "希蘿亞 - 揮灑陽光的太陽魔女",
+            img: "揭示_希亞.png",
+            potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
+            comment: "像溫暖晨光一樣充滿活力與正能量！你擁有無與倫比的同理心與熱情，總是默默照顧著身邊每一個人，是全隊最堅固的後盾與精神支柱。",
+            good: "可樂月月（陽光照亮深邃的夜空）",
+            bad: "艾絲梅亞（頹廢能量與妳的熱血相衝）"
+        },
+        snowbao: {
+            title: "雪寶うさぎ - 壞心眼的兔兔魔女",
+            img: "揭示_雪寶.png",
+            potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
+            comment: "外表是軟萌無辜的小兔兔，骨子裡卻裝滿了壞心眼與惡作劇靈感！你最喜歡看別人被你捉弄後手足無措的模樣，是個讓人愛恨交織的聰明鬼靈精。",
+            good: "艾絲梅亞（妳的惡作劇能戳中頹廢者的神經）",
+            bad: "姆莉醬（魅惑與壞心眼的頂峰對決）"
+        },
+        yoyo: {
+            title: "呦呦 - 自信過頭系魔女",
+            img: "揭示_呦呦.png",
+            potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
+            comment: "光芒四射、自信爆棚的光彩存在！你從不掩飾自己的強大與魅力，永遠站在舞台最中央，用極具感染力的霸氣帶領所有人衝鋒陷陣！",
+            good: "黑羊める（研究怪咖很佩服妳的耀眼自信）",
+            bad: "可樂月月（冷靜軍師無法理解過度熱血）"
+        },
+        kurohitsuji: {
+            title: "黒羊める - 副作用比效果多的煉金魔女",
+            img: "揭示_咩嚕.png",
+            potion: "🍹 命定魔藥：黑魔女・神秘金色粉末冬瓜烏龍",
+            comment: "充滿狂熱實驗精神的怪咖魔女！你對未知的世界抱持極大好奇，即使過程中總是伴隨著各種無關緊要的爆炸與副作用，你也樂在其中、永不放棄！",
+            good: "呦呦（需要妳這張閃耀大牌來幫妳試藥）",
+            bad: "愛紗公主（完美主義者受不了突發爆炸）"
+        },
+        esmea: {
+            title: "艾絲梅亞 - 絕｜頹廢｜境尼古魔女",
+            img: "揭示_艾絲梅亞.png",
+            potion: "🍹 命定魔藥：黑魔女・神秘金色粉末冬瓜烏龍",
+            comment: "奉行「能躺著絕不坐著」的絕境擺爛大師！你擁有極高冷靜的厭世智慧，看破世俗紛擾，雖然嘴上說著好麻煩，但關鍵時刻依然會默默展現實力。",
+            good: "雪寶うさぎ（壞心眼兔兔會把妳從床上拉起來）",
+            bad: "希蘿亞（過度熱情會消耗妳的能量條）"
+        },
+        isowata: {
+            title: "伊索渡 - 災厄釀造魔女",
+            img: "揭示_渡渡.png",
+            potion: "🍹 命定魔藥：黑魔女・神秘金色粉末冬瓜烏龍",
+            comment: "周身散發著嚴謹、神秘與禁忌氣息的強大魔女。你做事條理分明，對待魔藥與魔法有著極高的追求，雖然看起來難以接近，實則非常重視承諾。",
+            good: "姆莉醬（魅惑可愛能融化妳的嚴肅冷酷）",
+            bad: "悠妮涅可（好奇貓貓太常打亂妳的精密計畫）"
+        },
+        yunineko: {
+            title: "悠妮涅可 - 好奇貓貓魔女",
+            img: "揭示_悠妮.png",
+            potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
+            comment: "充滿天真浪漫與無窮好奇心的自由靈魂！你的心思像風一樣難以捉摸，總是跟隨著快樂的直覺四處探險，能發現生活中所有人忽略的美好樂趣。",
+            good: "悠妮涅可 / 白派夥伴（同頻率的探索快樂）",
+            bad: "伊索渡（過度嚴謹會壓抑妳的自由靈魂）"
+        }
     };
 
     // 20 題題目與計分權重設定
@@ -240,7 +396,7 @@ body {
         {
             q: "7. 練習咒語試了幾次都失敗，你會？",
             options: [
-                { text: "A. 生氣地嘟嘴抱怨，但轉頭立刻更賣力地練習給所有人看！", scores: { aisha: 3, yoyo: 1 } },
+                { text: "A. 生氣地嘟嘴抱怨，但轉頭力刻更賣力地練習給所有人看！", scores: { aisha: 3, yoyo: 1 } },
                 { text: "B. 停下來冷靜思考，推演命運與魔力流向。", scores: { colamoonie: 3, isowata: 1 } },
                 { text: "C. 算了啦～這代表今天不適合練功，先去嗑個點心睡覺吧！", scores: { esmea: 3, potato: 1 } },
                 { text: "D. 露出招牌微笑對自己說「沒關係再試一次」，繼續保持信心！", scores: { hiroa: 3, yoyo: 1 } }
@@ -295,7 +451,7 @@ body {
             q: "13. 朋友開了一個非常難笑的冷笑話，你的反應是？",
             options: [
                 { text: "A. 為了不讓他尷尬，給予捧場的大笑或拍手。", scores: { hiroa: 3, yunineko: 1 } },
-                { text: "B. 給他一個無情的白眼，並用毒舌幽默吐槽回去。", scores: { aisha: 2, isowata: 2 } },
+                { text: "B. 給他一個無情白眼，並用毒舌幽默吐槽回去。", scores: { aisha: 2, isowata: 2 } },
                 { text: "C. 完全沒在聽，心思已經飛到宇宙去了。", scores: { yunineko: 3, esmea: 1 } },
                 { text: "D. 認真指出這個笑話邏輯哪裡不對，順便科普相關知識。", scores: { colamoonie: 2, kurohitsuji: 1 } }
             ]
@@ -422,7 +578,13 @@ body {
             }
         }
 
-        document.getElementById('result-image').src = characterImages[winner];
+        const data = charDatabase[winner];
+        document.getElementById('result-image').src = data.img;
+        document.getElementById('char-title').innerText = data.title;
+        document.getElementById('potion-tag').innerText = data.potion;
+        document.getElementById('char-comment').innerText = data.comment;
+        document.getElementById('good-match').innerText = data.good;
+        document.getElementById('bad-match').innerText = data.bad;
     }
 
     function copyLink() {
