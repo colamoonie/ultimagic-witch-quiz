@@ -13,19 +13,24 @@
             --btn-hover: #4a2080;
         }
 
-        body {
-            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(#3a1c68 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
+body {
+    font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+
+    /* 🖼️ 背景圖設定 (防拉伸/防變形) */
+    background-image: url('bg.png'); /* 替換成妳的背景檔名 */
+    background-size: cover;          /* 自動縮放填滿螢幕，絕不拉伸變形 */
+    background-position: center;      /* 永遠鎖定在背景圖的正中央 */
+    background-repeat: no-repeat;     /* 不重複拼貼 */
+    background-attachment: fixed;     /* 手機滑動時背景固定，質感極佳 */
+}
 
         .container {
             width: 100%;
