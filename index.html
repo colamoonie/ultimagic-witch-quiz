@@ -521,6 +521,44 @@
         }
     ];
 
+
+    // 人設優先的平衡調整：不改題目文字，只補足合理的次要特質。
+    const semanticScoreAdjustments = [
+        [1, 0, 'hiroa', -1], [1, 0, 'yunineko', 1],
+        [1, 1, 'colamoonie', -1], [1, 1, 'isowata', 1],
+        [1, 2, 'potato', -1], [1, 2, 'yunineko', 1],
+        [2, 1, 'esmea', -1], [2, 3, 'muri', 1],
+        [3, 0, 'hiroa', -1], [3, 0, 'yunineko', 1],
+        [3, 1, 'muri', 1], [3, 2, 'esmea', -1],
+        [4, 0, 'muri', 1], [4, 0, 'yunineko', 1],
+        [4, 3, 'hiroa', -1], [4, 3, 'kurohitsuji', 1],
+        [5, 2, 'esmea', -1], [5, 2, 'aisha', 1],
+        [6, 2, 'esmea', -1], [6, 2, 'yunineko', 1], [6, 3, 'hiroa', -1],
+        [7, 3, 'esmea', -1], [7, 3, 'yunineko', 1],
+        [8, 0, 'hiroa', -1], [8, 2, 'muri', 1], [8, 3, 'esmea', -1],
+        [9, 0, 'hiroa', -1], [9, 0, 'yunineko', 1],
+        [9, 2, 'aisha', 1], [9, 3, 'esmea', -1],
+        [10, 1, 'esmea', -1], [10, 1, 'yunineko', 1],
+        [10, 2, 'muri', 1], [10, 3, 'aisha', 1],
+        [11, 0, 'hiroa', -1], [11, 0, 'yunineko', 1],
+        [11, 1, 'aisha', 1], [11, 1, 'esmea', -1], [11, 2, 'muri', 1],
+        [12, 0, 'hiroa', -1], [12, 0, 'yunineko', 1], [12, 3, 'kurohitsuji', 1],
+        [13, 0, 'muri', 1], [13, 3, 'esmea', -1], [13, 3, 'yunineko', 1],
+        [14, 1, 'colamoonie', -1], [14, 1, 'isowata', 1],
+        [14, 3, 'hiroa', -1], [14, 3, 'muri', 1], [14, 3, 'yunineko', 1],
+        [15, 0, 'hiroa', -1], [15, 2, 'muri', 1], [15, 3, 'esmea', -1],
+        [16, 0, 'yunineko', 1], [16, 2, 'esmea', -1],
+        [17, 0, 'muri', 1], [17, 0, 'yunineko', 1],
+        [17, 2, 'esmea', -1], [17, 2, 'yunineko', 1], [17, 3, 'hiroa', -1],
+        [18, 2, 'muri', 1], [18, 3, 'hiroa', -1], [18, 3, 'yunineko', 2],
+        [19, 2, 'aisha', 1], [19, 3, 'kurohitsuji', 1]
+    ];
+    for (const [questionIndex, optionIndex, character, delta] of semanticScoreAdjustments) {
+        const scores = questions[questionIndex].options[optionIndex].scores;
+        scores[character] = (scores[character] || 0) + delta;
+        if (scores[character] === 0) delete scores[character];
+    }
+
     let currentQuestion = 0;
     let userScores = {
         yoyo: 0, kurohitsuji: 0, muri: 0, hiroa: 0, yunineko: 0,
@@ -569,14 +607,11 @@
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
 
-        let winner = 'hiroa';
-        let maxScore = -1;
-        for (let char in userScores) {
-            if (userScores[char] > maxScore) {
-                maxScore = userScores[char];
-                winner = char;
-            }
-        }
+        // 平手時只在同分最高者中公平抽選，不受 userScores 宣告順序影響。
+        const maxScore = Math.max(...Object.values(userScores));
+        const tiedWinners = Object.keys(userScores)
+            .filter(char => userScores[char] === maxScore);
+        const winner = tiedWinners[Math.floor(Math.random() * tiedWinners.length)];
 
         const data = charDatabase[winner];
         document.getElementById('result-image').src = data.img;
@@ -595,3 +630,4 @@
 
 </body>
 </html>
+
