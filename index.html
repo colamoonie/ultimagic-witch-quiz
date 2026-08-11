@@ -241,6 +241,7 @@
         </div>
 
         <button class="share-btn" onclick="copyLink()">📋 複製連結分享給友達</button>
+        <button class="share-btn" onclick="restartQuiz()">🔄 再測一次</button>
     </div>
 </div>
 
@@ -626,6 +627,19 @@
         navigator.clipboard.writeText(window.location.href);
         alert('網址已複製！快分享給朋友一起測測看吧！');
     }
+    function restartQuiz() {
+    currentQuestion = 0;
+
+    for (let char in userScores) {
+        userScores[char] = 0;
+    }
+
+    document.getElementById('result-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    document.getElementById('progress').style.width = '0%';
+
+    showQuestion();
+}
 </script>
 
 </body>
