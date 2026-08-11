@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【終焉魔法學院】命定魔女心理測驗</title>
+    <style>
+        :root {
+            --bg-color: #1a0933;
+            --card-bg: #2b124c;
+            --accent-color: #ffd700;
+            --text-color: #f3e8ff;
+            --btn-hover: #4a2080;
+        }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(#3a1c68 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #d1b3ff;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #140628;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #9b51e0, var(--accent-color));
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #391763;
+            color: var(--text-color);
+            border: 1px solid #7b3fe4;
+            padding: 14px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+        }
+
+        .option-btn:hover {
+            background: var(--btn-hover);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .result-img {
+            width: 100%;
+            border-radius: 12px;
+            border: 2px solid var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .share-btn {
+            background: var(--accent-color);
+            color: #1a0933;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .share-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 開始畫面 -->
+    <div id="start-screen">
+        <h1>🔮 終焉魔法學院 🔮<br>【命定魔女入學性向測驗】</h1>
+        <p class="subtitle">第 87 屆魔藥學對抗賽開賽在即！<br>回答 20 道學院生活情境題，測出哪一位魔女（或魔男）是你的靈魂命定！</p>
+        <button class="share-btn" onclick="startQuiz()">進入學院測試 ✦</button>
+    </div>
+
+    <!-- 測驗畫面 -->
+    <div id="quiz-screen" class="hidden">
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="question-text" id="question-text">題目載入中...</div>
+        <div class="options-container" id="options-container"></div>
+    </div>
+
+    <!-- 結果畫面 -->
+    <div id="result-screen" class="hidden">
+        <h1>✨ 測驗結果揭曉 ✨</h1>
+        <p class="subtitle">在終焉魔法學院裡，你的命定代表是：</p>
+        <img id="result-image" class="result-img" src="" alt="測驗結果圖">
+        <br>
+        <button class="share-btn" onclick="copyLink()">📋 複製連結分享給友達</button>
+    </div>
+</div>
+
+<script>
+    // 角色對應圖片清單
+    const characterImages = {
+        yoyo: "揭示_呦呦.png",
+        kurohitsuji: "揭示_咩嚕.png",
+        muri: "揭示_姆莉.png",
+        hiroa: "揭示_希亞.png",
+        yunineko: "揭示_悠妮.png",
+        aisha: "揭示_愛紗.png",
+        colamoonie: "揭示_月月.png",
+        isowata: "揭示_渡渡.png",
+        esmea: "揭示_艾絲梅亞.png",
+        snowbao: "揭示_雪寶.png",
+        potato: "揭示_薯薯.png"
+    };
+
+    // 20 題題目與計分權重設定
+    const questions = [
+        {
+            q: "1. 收到魔法學院錄取通知書時，你的第一個念頭是？",
+            options: [
+                { text: "A. 很好，這個世界終於準備好迎接我的才能了！", scores: { yoyo: 3, hiroa: 1 } },
+                { text: "B. 感覺會有很多有趣的怪事發生，太期待了！", scores: { yunineko: 3, muri: 1 } },
+                { text: "C. 好麻煩喔……一定要搬去宿舍嗎？可以線上上課嗎？", scores: { esmea: 3, potato: 1 } },
+                { text: "D. 稍微有點緊張，希望那裡的室友和老師都很好相處。", scores: { hiroa: 2, snowbao: 1 } }
+            ]
+        },
+        {
+            q: "2. 走進宿舍房間要選床位時，你傾向選擇哪裡的床？",
+            options: [
+                { text: "A. 靠窗、陽光可以直接曬進來、視野最好的位置。", scores: { hiroa: 3, yoyo: 1 } },
+                { text: "B. 最深處、安靜、不太會被走廊打擾的隱密角落。", scores: { colamoonie: 2, isowata: 2 } },
+                { text: "C. 離門口最近，方便隨時跑出去溜達或串門子。", scores: { potato: 3, muri: 1 } },
+                { text: "D. 空間最大、可以擺放我很多個人收藏與實驗設備的位置。", scores: { kurohitsuji: 3, aisha: 1 } }
+            ]
+        },
+        {
+            q: "3. 宿舍玄關的鞋櫃擺得亂七八糟，你會？",
+            options: [
+                { text: "A. 順手把它們全部排整齊，看順眼了心情才好。", scores: { hiroa: 2, isowata: 1 } },
+                { text: "B. 無視它直接跨過去，反正只要我不尷尬，尷尬的就是別人。", scores: { esmea: 3, potato: 1 } },
+                { text: "C. 踢到旁邊去，甚至想順手把室友的鞋子綁在一起作弄他。", scores: { snowbao: 3, aisha: 1 } },
+                { text: "D. 拍照發到社群，附上一句刻薄又搞笑的吐槽。", scores: { muri: 2, yoyo: 1 } }
+            ]
+        },
+        {
+            q: "4. 上課第一天，你發現隔壁桌的同學在偷打瞌睡，你會？",
+            options: [
+                { text: "A. 幫他看著老師，順便在筆記上記下重點給他。", scores: { hiroa: 3, yunineko: 1 } },
+                { text: "B. 拿羽毛或筆尖偷偷戳他，看他嚇一跳的反應。", scores: { snowbao: 3, muri: 1 } },
+                { text: "C. 自己也跟著打瞌睡，大家一起趴下才是真兄弟。", scores: { esmea: 2, potato: 2 } },
+                { text: "D. 冷眼旁觀，默默在心裡評估這個人大概期末會被退學。", scores: { colamoonie: 2, isowata: 2 } }
+            ]
+        },
+        {
+            q: "5. 深夜傳出「有人把制服當食物吃了」的尖叫聲，你的態度是？",
+            options: [
+                { text: "A. 衝第一線！這種熱鬧不看對不起自己！", scores: { potato: 3, muri: 2 } },
+                { text: "B. 默默在後面觀察，分析這到底是哪位天才做出的荒謬舉動。", scores: { colamoonie: 3, isowata: 1 } },
+                { text: "C. 太扯了吧～暗中笑他，順便把這件事記下來當威脅籌碼。", scores: { snowbao: 3, aisha: 1 } },
+                { text: "D. 擔心是不是有人壓力太大中毒了？想拿點藥過去拯救他。", scores: { hiroa: 2, kurohitsuji: 1 } }
+            ]
+        },
+        {
+            q: "6. 調配魔藥時，指示寫著「加入稀有原料一滴」，你習慣？",
+            options: [
+                { text: "A. 嚴格拿滴管計算，多半滴少半滴都不行。", scores: { isowata: 3, colamoonie: 1 } },
+                { text: "B. 憑感覺加個三四滴，甚至想再加點別的看會不會爆開！", scores: { kurohitsuji: 3, potato: 1 } },
+                { text: "C. 太麻煩了，直接叫旁邊的人幫我加，我負責看著。", scores: { esmea: 3, aisha: 1 } },
+                { text: "D. 輕輕加進去，並祈禱這杯魔藥能有完美的成果。", scores: { hiroa: 2, yoyo: 1 } }
+            ]
+        },
+        {
+            q: "7. 練習咒語試了幾次都失敗，你會？",
+            options: [
+                { text: "A. 生氣地嘟嘴抱怨，但轉頭立刻更賣力地練習給所有人看！", scores: { aisha: 3, yoyo: 1 } },
+                { text: "B. 停下來冷靜思考，推演命運與魔力流向。", scores: { colamoonie: 3, isowata: 1 } },
+                { text: "C. 算了啦～這代表今天不適合練功，先去嗑個點心睡覺吧！", scores: { esmea: 3, potato: 1 } },
+                { text: "D. 露出招牌微笑對自己說「沒關係再試一次」，繼續保持信心！", scores: { hiroa: 3, yoyo: 1 } }
+            ]
+        },
+        {
+            q: "8. 對抗賽即將開打，如果被指定為隊長，你的風格是？",
+            options: [
+                { text: "A. 站在最前面大聲激勵士氣，帶領大家迎向耀眼的勝利！", scores: { yoyo: 3, hiroa: 1 } },
+                { text: "B. 在幕後擬定完美的戰術，引導對方一步步掉入陷阱。", scores: { colamoonie: 2, isowata: 2 } },
+                { text: "C. 用我的可愛與魅力去吸引對手，讓他們無法集中精神！", scores: { muri: 3, aisha: 1 } },
+                { text: "D. 擺爛式領導：「大家隨便打，開心就好～」", scores: { esmea: 3, potato: 1 } }
+            ]
+        },
+        {
+            q: "9. 比賽中遇到強敵、瀕臨落敗時，你會？",
+            options: [
+                { text: "A. 永不言棄！就算輸也要輸得漂亮、燃燒最後一絲力量！", scores: { hiroa: 3, yoyo: 1 } },
+                { text: "B. 亮出我藏在口袋裡的秘密道具/爆破魔藥跟他爆了！", scores: { kurohitsuji: 3, potato: 1 } },
+                { text: "C. 裝可憐或賣萌，試圖讓對方心軟手下留情。", scores: { muri: 2, snowbao: 2 } },
+                { text: "D. 優雅投降：「認輸認輸～打架太累人了，留點體力吃晚餐。」", scores: { esmea: 3, isowata: 1 } }
+            ]
+        },
+        {
+            q: "10. 比賽獲得豐富獎金，你第一時間會？",
+            options: [
+                { text: "A. 請全隊所有朋友去吃大餐，大慶特慶！", scores: { hiroa: 2, potato: 2 } },
+                { text: "B. 去買一直想買的高級稀有魔法原料或古怪收藏品。", scores: { kurohitsuji: 2, colamoonie: 2 } },
+                { text: "C. 買一堆精緻漂亮的衣服飾品，把自己打扮得美美的。", scores: { aisha: 2, yoyo: 2 } },
+                { text: "D. 存起來，或者買一個超舒服的特級躺椅放房間。", scores: { esmea: 3, isowata: 1 } }
+            ]
+        },
+        {
+            q: "11. 當你心情不好的時候，你通常會怎麼宣洩？",
+            options: [
+                { text: "A. 找朋友狂刷存在感抱怨吐槽，講出來才舒服。", scores: { yoyo: 2, potato: 2 } },
+                { text: "B. 躲起來獨處，做自己的事，等情緒代謝。", scores: { colamoonie: 2, esmea: 2 } },
+                { text: "C. 去大吃大喝，或是買一些平常不敢買的怪東西。", scores: { kurohitsuji: 2, muri: 2 } },
+                { text: "D. 找個安靜的地方發呆、吸貓，或是看看天空。", scores: { yunineko: 3, aisha: 1 } }
+            ]
+        },
+        {
+            q: "12. 如果有不認識的新生來向你搭訕請教問題，你會？",
+            options: [
+                { text: "A. 熱情地拉著他介紹全校，連食堂哪裡好吃都講一遍！", scores: { hiroa: 3, yoyo: 1 } },
+                { text: "B. 表面上客客氣氣，但眼神透露出「沒事別打擾我」。", scores: { aisha: 2, esmea: 2 } },
+                { text: "C. 指給他一個錯誤的方向，暗中偷笑看好戲。", scores: { snowbao: 3, muri: 1 } },
+                { text: "D. 簡單扼要回答重點，然後繼續做自己原本的事。", scores: { isowata: 2, colamoonie: 1 } }
+            ]
+        },
+        {
+            q: "13. 朋友開了一個非常難笑的冷笑話，你的反應是？",
+            options: [
+                { text: "A. 為了不讓他尷尬，給予捧場的大笑或拍手。", scores: { hiroa: 3, yunineko: 1 } },
+                { text: "B. 給他一個無情的白眼，並用毒舌幽默吐槽回去。", scores: { aisha: 2, isowata: 2 } },
+                { text: "C. 完全沒在聽，心思已經飛到宇宙去了。", scores: { yunineko: 3, esmea: 1 } },
+                { text: "D. 認真指出這個笑話邏輯哪裡不對，順便科普相關知識。", scores: { colamoonie: 2, kurohitsuji: 1 } }
+            ]
+        },
+        {
+            q: "14. 學院舉辦舞會，你的穿搭造型策略是？",
+            options: [
+                { text: "A. 絕對要成為全場焦點！穿上最閃亮氣派的禮服！", scores: { yoyo: 3, muri: 1 } },
+                { text: "B. 選擇深色系、優雅但帶有一絲神秘感的風格。", scores: { colamoonie: 2, isowata: 2 } },
+                { text: "C. 穿得精緻可愛，但會搭配一些古怪小飾品。", scores: { snowbao: 2, kurohitsuji: 2 } },
+                { text: "D. 只要穿起來舒服就好，太繁複的衣服我才不要穿。", scores: { esmea: 3, potato: 1 } }
+            ]
+        },
+        {
+            q: "15. 當你發現一個很久沒人知道的地下室時，你會？",
+            options: [
+                { text: "A. 毫不猶豫衝進去探險！說不定有寶藏或怪物！", scores: { yunineko: 3, potato: 1 } },
+                { text: "B. 記下位置，先回去查閱歷史文獻，準備充分再來。", scores: { colamoonie: 2, isowata: 2 } },
+                { text: "C. 把這裡當成我私人的秘密基地，誰都不告訴～", scores: { aisha: 2, snowbao: 1 } },
+                { text: "D. 告訴最好的朋友，兩個人一起牽手進去冒險。", scores: { hiroa: 2, yoyo: 1 } }
+            ]
+        },
+        {
+            q: "16. 你認為「強大的魔法」最重要的作用是什麼？",
+            options: [
+                { text: "A. 保護重要的人，並為世界帶來溫暖與希望。", scores: { hiroa: 3, yoyo: 1 } },
+                { text: "B. 探索未知、掌控命運，掌握世界的終極真理。", scores: { colamoonie: 3, isowata: 1 } },
+                { text: "C. 讓所有人注意到我、崇拜我，展現我的獨一無二！", scores: { yoyo: 3, muri: 1 } },
+                { text: "D. 讓生活變得更方便更輕鬆，最好能自動幫我做事。", scores: { esmea: 3, potato: 1 } }
+            ]
+        },
+        {
+            q: "17. 如果可以獲得一個「魔法副作用」，你比較能接受？",
+            options: [
+                { text: "A. 說話偶爾會冒出貓咪的喵喵叫聲或耳朵彈出來。", scores: { aisha: 3, yunineko: 1 } },
+                { text: "B. 身邊偶爾會小範圍爆炸發出彩色煙霧。", scores: { kurohitsuji: 3, potato: 1 } },
+                { text: "C. 只要一努力工作就會極度睏倦想睡覺。", scores: { esmea: 3, potato: 1 } },
+                { text: "D. 走過的地方都會莫名其妙長出小花和小草。", scores: { hiroa: 2, snowbao: 1 } }
+            ]
+        },
+        {
+            q: "18. 面對團體裡的混亂製造者（如吃制服的魔男），你覺得？",
+            options: [
+                { text: "A. 太有趣了！世界需要多一點這種荒謬的快樂！", scores: { potato: 3, muri: 1 } },
+                { text: "B. 真是讓人受不了……暗中捉弄他一下好了。", scores: { snowbao: 3, aisha: 1 } },
+                { text: "C. 只要不惹到我頭上，他想怎麼折騰都隨便他。", scores: { esmea: 2, colamoonie: 1 } },
+                { text: "D. 雖然很令人頭痛，但還是會忍不住想照顧他。", scores: { hiroa: 3, isowata: 1 } }
+            ]
+        },
+        {
+            q: "19. 試試茶聯名飲料擺在面前，你第一口會怎麼喝？",
+            options: [
+                { text: "A. 拿起吸管猛吸一大口，感受最直接的美味！", scores: { potato: 2, yoyo: 2 } },
+                { text: "B. 先仔細端詳包裝上的「魔女呢喃」，拍照打卡後再喝。", scores: { colamoonie: 2, isowata: 2 } },
+                { text: "C. 逼旁邊的朋友先喝第一口，看他的反應我再喝！", scores: { snowbao: 3, muri: 1 } },
+                { text: "D. 順其自然地優雅品嚐，享受這一刻的悠閒。", scores: { hiroa: 2, esmea: 1 } }
+            ]
+        },
+        {
+            q: "20. 最後，你希望自己在別人眼中是怎樣的存在？",
+            options: [
+                { text: "A. 像太陽一樣帶來正能量，或是閃耀全場的主角！", scores: { hiroa: 2, yoyo: 2 } },
+                { text: "B. 深不可測、優雅且掌控大局的神秘力量。", scores: { colamoonie: 2, isowata: 2 } },
+                { text: "C. 靈動可愛、帶點小惡作劇但讓人討厭不起來的迷人角色。", scores: { snowbao: 2, aisha: 2, muri: 1 } },
+                { text: "D. 荒謬搞笑、隨性自由、不受任何規則束縛的快樂源泉。", scores: { potato: 2, kurohitsuji: 2, esmea: 1 } }
+            ]
+        }
+    ];
+
+    let currentQuestion = 0;
+    let userScores = {
+        yoyo: 0, kurohitsuji: 0, muri: 0, hiroa: 0, yunineko: 0,
+        aisha: 0, colamoonie: 0, isowata: 0, esmea: 0, snowbao: 0, potato: 0
+    };
+
+    function startQuiz() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const qData = questions[currentQuestion];
+        document.getElementById('question-text').innerText = qData.q;
+        
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        qData.options.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt.text;
+            btn.onclick = () => selectOption(opt.scores);
+            optionsContainer.appendChild(btn);
+        });
+
+        const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+        document.getElementById('progress').style.width = progressPercent + '%';
+    }
+
+    function selectOption(scores) {
+        for (let char in scores) {
+            userScores[char] += scores[char];
+        }
+
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        let winner = 'hiroa';
+        let maxScore = -1;
+        for (let char in userScores) {
+            if (userScores[char] > maxScore) {
+                maxScore = userScores[char];
+                winner = char;
+            }
+        }
+
+        document.getElementById('result-image').src = characterImages[winner];
+    }
+
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href);
+        alert('網址已複製！快分享給朋友一起測測看吧！');
+    }
+</script>
+
+</body>
+</html>
