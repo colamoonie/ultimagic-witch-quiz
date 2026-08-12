@@ -205,10 +205,54 @@
         }
 
         .hidden { display: none; }
+        /* 🛒 懸浮導購按鈕區 */
+        .cta-toolbar {
+            position: fixed;
+            top: 15px; /* 固定在螢幕頂端，若想改在底部可換成 bottom: 15px; */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 9999;
+            width: 90%;
+            max-width: 500px;
+            justify-content: center;
+        }
+
+        .cta-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #1a0933;
+            border: 1px solid #ffffff;
+            padding: 10px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+            background: linear-gradient(135deg, #ffffff, #ffd700);
+        }
+
+        /* 避免頂端懸浮按鈕遮擋主卡片內容 */
+        body {
+            padding-top: 70px; 
+        }
     </style>
 </head>
 <body>
-
+<!-- 🛒 貫穿全程的導購按鈕列 -->
+<div class="cta-toolbar">
+    <a href="https://tixre.com/guest/program/detail/mg7cr" target="_blank" class="cta-btn">🍹 魔法飲料這裡買！</a>
+    <a href="https://myship.7-11.com.tw/general/detail/GM2312238668494" target="_blank" class="cta-btn">✨ 魔法周邊這裡買！</a>
+</div>
 <div class="container">
     <!-- 開始畫面 -->
     <div id="start-screen">
@@ -255,7 +299,7 @@
             </div>
         </div>
 
-        <button class="share-btn" onclick="copyLink()">📋 複製連結分享給友達</button>
+        <button class="share-btn" onclick="copyLink()">📋 複製連結分享給朋朋</button>
         <button class="share-btn" onclick="restartQuiz()">🔄 再測一次</button>
     </div>
 </div>
@@ -303,7 +347,7 @@
             potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
             comment: "傲嬌又優雅的貓咪化身！你擁有強烈的自尊心與精緻的生活品味，雖然偶爾會鬧小脾氣或捉弄人，但只要被你認定為朋友，就會獲得你最直率的護短與關心。",
             good: "語風薯薯（奇葩行為能瞬間惹怒並逗笑妳）",
-            bad: "黑羊める（爆破魔藥會弄髒妳的精緻衣裳）"
+            bad: "黒羊める（爆破魔藥會弄髒妳的精緻衣裳）"
         },
         hiroa: {
             title: "希蘿亞 - 揮灑陽光的太陽魔女",
@@ -326,7 +370,7 @@
             img: "揭示_呦呦.png",
             potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
             comment: "光芒四射、自信爆棚的光彩存在！你從不掩飾自己的強大與魅力，永遠站在舞台最中央，用極具感染力的霸氣帶領所有人衝鋒陷陣！",
-            good: "黑羊める（研究怪咖很佩服妳的耀眼自信）",
+            good: "黒羊める（研究怪咖很佩服妳的耀眼自信）",
             bad: "可樂月月（冷靜軍師無法理解過度熱血）"
         },
         kurohitsuji: {
