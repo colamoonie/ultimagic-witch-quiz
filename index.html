@@ -205,17 +205,21 @@
         }
 
         .hidden { display: none; }
-        /* 🛒 懸浮導購按鈕區 */
+/* 外層對齊容器 */
+        .quiz-wrapper {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 🛒 導購按鈕區 (緊貼 Container 正上方) */
         .cta-toolbar {
-            position: fixed;
-            top: 15px; /* 固定在螢幕頂端，若想改在底部可換成 bottom: 15px; */
-            left: 50%;
-            transform: translateX(-50%);
             display: flex;
             gap: 10px;
-            z-index: 9999;
-            width: 90%;
-            max-width: 500px;
+            margin-bottom: 12px;
+            width: 100%;
             justify-content: center;
         }
 
@@ -226,7 +230,7 @@
             border: 1px solid #ffffff;
             padding: 10px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: bold;
             text-decoration: none;
             text-align: center;
@@ -241,68 +245,78 @@
             background: linear-gradient(135deg, #ffffff, #ffd700);
         }
 
-        /* 避免頂端懸浮按鈕遮擋主卡片內容 */
-        body {
-            padding-top: 70px; 
+        /* 🔘 結果頁按鈕間距拉開 */
+        .result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-<!-- 🛒 貫穿全程的導購按鈕列 -->
-<div class="cta-toolbar">
-    <a href="https://tixre.com/guest/program/detail/mg7cr" target="_blank" class="cta-btn">🍹 魔法飲料這裡買！</a>
-    <a href="https://myship.7-11.com.tw/general/detail/GM2312238668494" target="_blank" class="cta-btn">✨ 魔法周邊這裡買！</a>
-</div>
-<div class="container">
-    <!-- 開始畫面 -->
-    <div id="start-screen">
-        <img
-            src="banner.png"
-            alt="終焉魔法學院命定魔女測驗"
-            class="quiz-banner"
-        >
-        <h1>🔮 終焉魔法學院 🔮<br>【命定魔女入學性向測驗】</h1>
-        <p class="subtitle">第 87 屆魔藥學對抗賽開賽在即！<br>回答 20 道學院情境題，測出哪一位魔女（或魔男）是你的靈魂命定！</p>
-        <button class="share-btn" onclick="startQuiz()">進入學院測試 ✦</button>
+
+<div class="quiz-wrapper">
+
+    <!-- 🛒 貫穿全程的導購按鈕列 (緊貼 Container 正上方) -->
+    <div class="cta-toolbar">
+        <a href="這裡貼上飲料購買連結" target="_blank" class="cta-btn">🍹 魔法飲料這裡買！</a>
+        <a href="這裡貼上周邊購買連結" target="_blank" class="cta-btn">✨ 魔法周邊這裡買！</a>
     </div>
 
-    <!-- 測驗畫面 -->
-    <div id="quiz-screen" class="hidden">
-        <div class="progress-bar">
-            <div class="progress" id="progress"></div>
-        </div>
-        <div class="question-text" id="question-text">題目載入中...</div>
-        <div class="options-container" id="options-container"></div>
-    </div>
-
-    <!-- 結果畫面 -->
-    <div id="result-screen" class="hidden">
-        <h1>✨ 靈魂共鳴揭曉 ✨</h1>
-        <img id="result-image" class="result-img" src="" alt="測驗結果圖">
-        
-        <div id="char-title" class="char-title"></div>
-        <div id="potion-tag" class="potion-tag"></div>
-
-        <div class="info-box">
-            <strong>📖 學院測驗評語：</strong><br>
-            <span id="char-comment"></span>
+    <div class="container">
+        <!-- 開始畫面 -->
+        <div id="start-screen">
+            <img src="banner.png" alt="終焉魔法學院命定魔女測驗" class="quiz-banner">
+            <h1>🔮 終焉魔法學院 🔮<br>【命定魔女入學性向測驗】</h1>
+            <p class="subtitle">第 87 屆魔藥學對抗賽開賽在即！<br>回答 20 道學院情境題，測出哪一位魔女（或魔男）是你的靈魂命定！</p>
+            <button class="share-btn" onclick="startQuiz()">進入學院測試 ✦</button>
         </div>
 
-        <div class="affinity-container">
-            <div class="affinity-card good">
-                <div class="affinity-title">💖 最佳契合魔女</div>
-                <div id="good-match"></div>
+        <!-- 測驗畫面 -->
+        <div id="quiz-screen" class="hidden">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
             </div>
-            <div class="affinity-card bad">
-                <div class="affinity-title">⚡ 屬性相克魔女</div>
-                <div id="bad-match"></div>
-            </div>
+            <div class="question-text" id="question-text">題目載入中...</div>
+            <div class="options-container" id="options-container"></div>
         </div>
 
-        <button class="share-btn" onclick="copyLink()">📋 複製連結分享給朋朋</button>
-        <button class="share-btn" onclick="restartQuiz()">🔄 再測一次</button>
+        <!-- 結果畫面 -->
+        <div id="result-screen" class="hidden">
+            <h1>✨ 靈魂共鳴揭曉 ✨</h1>
+            <img id="result-image" class="result-img" src="" alt="測驗結果圖">
+            
+            <div id="char-title" class="char-title"></div>
+            <div id="potion-tag" class="potion-tag"></div>
+
+            <div class="info-box">
+                <strong>📖 學院測驗評語：</strong><br>
+                <span id="char-comment"></span>
+            </div>
+
+            <div class="affinity-container">
+                <div class="affinity-card good">
+                    <div class="affinity-title">💖 最佳契合魔女</div>
+                    <div id="good-match"></div>
+                </div>
+                <div class="affinity-card bad">
+                    <div class="affinity-title">⚡ 屬性相克魔女</div>
+                    <div id="bad-match"></div>
+                </div>
+            </div>
+
+            <!-- 🔘 拉開距離的結果頁按鈕組 -->
+            <div class="result-actions">
+                <button class="share-btn" onclick="copyLink()">📋 複製連結分享給朋朋</button>
+                <button class="share-btn" onclick="restartQuiz()">🔄 再測一次</button>
+            </div>
+        </div>
     </div>
+
 </div>
+
+<!-- ⚠️ 底下的 <script> 及其內部的 JS 程式碼完全不用動，繼續接在後面即可！ -->
 
 <script>
     // ⚙️ Google 表單背景記錄設定 (請替換為你的表單資訊)
