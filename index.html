@@ -56,12 +56,6 @@
             border: 2px solid var(--accent-color);
         }
 
-        <img
-            src="banner.png"
-            alt="終焉魔法學院命定魔女測驗"
-            class="quiz-banner"
-        >
-        
         h1 {
             color: var(--accent-color);
             font-size: 1.5rem;
@@ -219,9 +213,9 @@
     <!-- 開始畫面 -->
     <div id="start-screen">
         <img
-        src="banner.png"
-        alt="終焉魔法學院命定魔女測驗"
-        class="quiz-banner"
+            src="banner.png"
+            alt="終焉魔法學院命定魔女測驗"
+            class="quiz-banner"
         >
         <h1>🔮 終焉魔法學院 🔮<br>【命定魔女入學性向測驗】</h1>
         <p class="subtitle">第 87 屆魔藥學對抗賽開賽在即！<br>回答 20 道學院情境題，測出哪一位魔女（或魔男）是你的靈魂命定！</p>
@@ -267,6 +261,16 @@
 </div>
 
 <script>
+    // ⚙️ Google 表單背景記錄設定 (請替換為你的表單資訊)
+    const GOOGLE_FORM_CONFIG = {
+        // 表單提交網址 (結尾必須是 formResponse)
+        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdZugcHMMkcHq2kHP0GnmTyhUiPz7McOCr_pHUrcr1OoGQJpQ/formResponse",
+        // 欄位 1: 測驗結果 (代碼範例: entry.123456789)
+        entryResult: "entry.1033235869",
+        // 欄位 2: 選擇紀錄 (代碼範例: entry.987654321)
+        entryAnswers: "entry.124248329"
+    };
+
     // 11 位魔女完整資料庫
     const charDatabase = {
         colamoonie: {
@@ -329,7 +333,7 @@
             title: "黒羊める - 副作用比效果多的煉金魔女",
             img: "揭示_咩嚕.png",
             potion: "🍹 命定魔藥：黑魔女・神秘金色粉末冬瓜烏龍",
-            comment: "充滿狂熱實驗精神的怪咖魔女！你對未知的世界抱持極大好奇，即使過程中總是伴隨著各種無關緊要的爆炸與副作用，你也樂在其中、永不放棄！",
+            comment: "充滿狂熱實驗精神的怪咖魔女！你對未知的世界抱持極大好奇，即使過程中總是伴隨各種無關緊要的爆炸與副作用，你也樂在其中、永不放棄！",
             good: "呦呦（需要妳這張閃耀大牌來幫妳試藥）",
             bad: "愛紗公主（完美主義者受不了突發爆炸）"
         },
@@ -353,7 +357,7 @@
             title: "悠妮涅可 - 好奇貓貓魔女",
             img: "揭示_悠妮.png",
             potion: "🍹 命定魔藥：白魔女・四季鮮奶茶佐布丁",
-            comment: "充滿天真浪漫與無窮好奇心的自由靈魂！你的心思像風一樣難以捉摸，總是跟隨著快樂的直覺四處探險，能發現生活中所有人忽略的美好樂趣。",
+            comment: "充滿天真浪漫與無窮好奇心的自由靈魂！你的心思像風一樣難以捉摸，總是跟隨快樂的直覺四處探險，能發現生活中所有人忽略的美好樂趣。",
             good: "悠妮涅可 / 白派夥伴（同頻率的探索快樂）",
             bad: "伊索渡（過度嚴謹會壓抑妳的自由靈魂）"
         }
@@ -543,8 +547,7 @@
         }
     ];
 
-
-    // 人設優先的平衡調整：不改題目文字，只補足合理的次要特質。
+    // 人設優先的平衡調整
     const semanticScoreAdjustments = [
         [1, 0, 'hiroa', -1], [1, 0, 'yunineko', 1],
         [1, 1, 'colamoonie', -1], [1, 1, 'isowata', 1],
@@ -582,6 +585,7 @@
     }
 
     let currentQuestion = 0;
+    let userAnswersTrack = []; // 紀錄每題選擇 (A/B/C/D)
     let userScores = {
         yoyo: 0, kurohitsuji: 0, muri: 0, hiroa: 0, yunineko: 0,
         aisha: 0, colamoonie: 0, isowata: 0, esmea: 0, snowbao: 0, potato: 0
@@ -600,11 +604,14 @@
         const optionsContainer = document.getElementById('options-container');
         optionsContainer.innerHTML = '';
 
-        qData.options.forEach((opt) => {
+        qData.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt.text;
-            btn.onclick = () => selectOption(opt.scores);
+            
+            // 抓取選項字首 (A/B/C/D)
+            const optionLetter = opt.text.charAt(0);
+            btn.onclick = () => selectOption(opt.scores, optionLetter);
             optionsContainer.appendChild(btn);
         });
 
@@ -612,10 +619,12 @@
         document.getElementById('progress').style.width = progressPercent + '%';
     }
 
-    function selectOption(scores) {
+    function selectOption(scores, optionLetter) {
         for (let char in scores) {
             userScores[char] += scores[char];
         }
+
+        userAnswersTrack.push(`${currentQuestion + 1}:${optionLetter}`);
 
         currentQuestion++;
         if (currentQuestion < questions.length) {
@@ -629,7 +638,7 @@
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
 
-        // 平手時只在同分最高者中公平抽選，不受 userScores 宣告順序影響。
+        // 平手公平抽選
         const maxScore = Math.max(...Object.values(userScores));
         const tiedWinners = Object.keys(userScores)
             .filter(char => userScores[char] === maxScore);
@@ -642,27 +651,53 @@
         document.getElementById('char-comment').innerText = data.comment;
         document.getElementById('good-match').innerText = data.good;
         document.getElementById('bad-match').innerText = data.bad;
+
+        // 📤 背景傳送統計數據至 Google 表單 (使用者完全無感知)
+        sendDataToGoogleForm(winner, userAnswersTrack.join(', '));
+    }
+
+    function sendDataToGoogleForm(resultWinner, answersText) {
+        if (!GOOGLE_FORM_CONFIG.formUrl || GOOGLE_FORM_CONFIG.formUrl.includes('YOUR_FORM_ID_HERE')) {
+            console.log("尚未設定 Google 表單網址，略過數據收集。");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append(GOOGLE_FORM_CONFIG.entryResult, resultWinner);
+        formData.append(GOOGLE_FORM_CONFIG.entryAnswers, answersText);
+
+        // 使用 no-cors 模式默默發送，不干擾使用者體驗
+        fetch(GOOGLE_FORM_CONFIG.formUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        }).then(() => {
+            console.log("測驗數據已成功傳送至學院資料庫！");
+        }).catch(err => {
+            console.error("數據傳送遭遇干擾：", err);
+        });
     }
 
     function copyLink() {
         navigator.clipboard.writeText(window.location.href);
         alert('網址已複製！快分享給朋友一起測測看吧！');
     }
+
     function restartQuiz() {
-    currentQuestion = 0;
+        currentQuestion = 0;
+        userAnswersTrack = [];
 
-    for (let char in userScores) {
-        userScores[char] = 0;
+        for (let char in userScores) {
+            userScores[char] = 0;
+        }
+
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        document.getElementById('progress').style.width = '0%';
+
+        showQuestion();
     }
-
-    document.getElementById('result-screen').classList.add('hidden');
-    document.getElementById('quiz-screen').classList.remove('hidden');
-    document.getElementById('progress').style.width = '0%';
-
-    showQuestion();
-}
 </script>
 
 </body>
 </html>
-
